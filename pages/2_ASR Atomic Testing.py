@@ -1,5 +1,7 @@
 import streamlit as st
 
+st.set_page_config(page_title="ASR Atomic Testing", layout="wide")
+
 asr_rules = {
     "Block All Office applications from creating child processes": {
         "description": "This rule blocks Office apps from creating child processes. Office apps include Word, Excel, PowerPoint, OneNote, and Access.\n\nCreating malicious child processes is a common malware strategy. Malware that abuses Office as a vector often runs VBA macros and exploit code to download and attempt to run more payloads. However, some legitimate line-of-business applications might also generate child processes for benign purposes; such as spawning a command prompt or using PowerShell to configure registry settings.\n\nIntune name: Office apps launching child processes\n\nConfiguration Manager name: Block Office application from creating child processes\n\nGUID: d4f940ab-401b-4efc-aadc-ad5f3c50688a\n\nAdvanced hunting action type:\n\nAsrOfficeChildProcessAudited\nAsrOfficeChildProcessBlocked\n\nDependencies: Microsoft Defender Antivirus\n\nreference:\n\nhttps://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-all-office-applications-from-creating-child-processes\n\nhttps://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office\n\nhttps://gist.github.com/infosecn1nja/24a733c5b3f0e5a8b6f0ca2cf75967e3",
@@ -355,8 +357,10 @@ st.title("ASR Atomic Testing")
 def determine_file_extension(script):
     if 'Sub ' in script or 'Function ' in script:
         return '.vbs'
-    elif 'xcopy ' in script or 'start ' in script:
+    elif 'xcopy ' in script:
         return '.bat'
+    elif 'invoke ' in script or 'Start-Process ' in script:
+        return '.ps1'
     else:
         return '.txt'
 
@@ -364,30 +368,15 @@ for rule_name, rule_info in asr_rules.items():
     with st.expander(rule_name):
         st.write(rule_info["description"])
         
-        # Check if 'script' key exists
-        if "script" in rule_info:
-            if isinstance(rule_info["script"], list):
-                script = "\n".join(item["script"] for item in rule_info["script"])
-            else:
-                script = rule_info["script"]
-            st.code(script, language="vb")
-            download_filename = f"{rule_name.replace(' ', '_')}.vbs"
-            st.download_button(
-                label="Download Script",
-                data=script,
-                file_name=download_filename,
-                mime="text/plain"
-            )
-        
-        # Check if 'scripts' key exists
-        elif "scripts" in rule_info:
+        if "scripts" in rule_info:
             for i, script_info in enumerate(rule_info["scripts"]):
                 if isinstance(script_info["script"], list):
                     script = "\n".join(item["script"] for item in script_info["script"])
                 else:
                     script = script_info["script"]
                 st.code(script, language="vb")
-                download_filename = f"{rule_name.replace(' ', '_')}_script_{i+1}.vbs"
+                file_extension = determine_file_extension(script)
+                download_filename = f"{rule_name.replace(' ', '_')}_script_{i+1}{file_extension}"
                 st.download_button(
                     label=f"Download Script {i+1}",
                     data=script,
