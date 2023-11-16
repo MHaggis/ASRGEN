@@ -73,9 +73,9 @@ if st.button("Generate Command"):
         if inputs['enable'] and not inputs['disable']:
             mode_grouping[inputs['mode']].append(rule_id)
             if inputs['exclusion']:
-                exclusion_command = f"Set-MpPreference -AddAttackSurfaceReductionRuleExclusions -Exclusions {inputs['exclusion']}"
+                exclusion_command = f"Set-MpPreference -AttackSurfaceReductionOnlyExclusions -Exclusions {inputs['exclusion']}"
                 exclusion_commands.append(exclusion_command)
-                st.caption("Unfortunately, exclusions via PowerShell are not possible per rule. This will add the exclusion to all rules.")
+                st.caption(f"Note: The exclusion will be applied to all rules. If you would like per-rule exclusions, use set-mppreference -AttackSurfaceReductionRules_Ids {rule_id} -AttackSurfaceReductionOnlyExclusions -Exclusions {inputs['exclusion']}")
         elif inputs['disable']:
             mode_grouping["Disabled"].append(rule_id)
 
