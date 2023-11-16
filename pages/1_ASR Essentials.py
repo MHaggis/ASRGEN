@@ -337,3 +337,4 @@ st.markdown("[Microsoft's Official ASR Documentation](https://docs.microsoft.com
 st.markdown("[MICROSOFT DEFENDER ANTIVIRUS ATTACK SURFACE REDUCTION RULES BYPASSES](https://thalpius.com/2020/11/02/microsoft-defender-antivirus-attack-surface-reduction-rules-bypasses/)")
 st.markdown("[Windows Defender Exploit Guard ASR Rules for Office](https://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office)")
 st.markdown("[Windows Defender Exploit Guard ASR Obfuscated Script Rule](https://www.darkoperator.com/blog/2017/11/8/windows-defender-exploit-guard-asr-obfuscated-script-rule)")
+st.markdown("[infosecn1nja GIST](https://gist.github.com/infosecn1nja/24a733c5b3f0e5a8b6f0ca2cf75967e3)")
