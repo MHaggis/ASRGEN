@@ -27,7 +27,7 @@ user_inputs = {}
 mode = None
 enable_all = st.checkbox("Enable All Rules")
 if enable_all:
-    global_mode = st.selectbox("Select mode for all rules:", ["Block", "Audit", "Warn"])
+    global_mode = st.selectbox("Select mode for all rules:", ["Enabled", "Audit", "Warn"])
     st.code("(Get-MpPreference).AttackSurfaceReductionRules_Ids | Foreach {Add-MpPreference -AttackSurfaceReductionRules_Ids $_ -AttackSurfaceReductionRules_Actions " + global_mode + "}", language="powershell")
 
 for rule_name, rule_id in asr_rules.items():
