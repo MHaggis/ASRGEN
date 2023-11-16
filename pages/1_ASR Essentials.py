@@ -142,14 +142,22 @@ ASR rules generate specific event codes that are logged in the Windows Event Log
 
 st.subheader("Common ASR Event Codes")
 st.write("""
-- **Event ID 1121**: Indicates a 'Block' action. This event is logged when an ASR rule blocks an action.
-- **Event ID 1122**: Relates to a 'Warn' action. This event is logged when a user is warned about a potentially risky action, but the action is allowed to proceed.
-- **Event ID 5007**: Represents an 'Audit' event. This event is logged when an action that would have been blocked or warned about is detected, but the rule is in audit mode.
-- **Event ID 1120**: This event is logged when an ASR rule is successfully applied.
-- **Event ID 1123**: This event is logged when an ASR rule fails to apply.
-- **Event ID 5008**: This event is logged when an ASR rule is modified.
-- **Event ID 5009**: This event is logged when an ASR rule is deleted.
+- **Event ID 1121**: Microsoft Defender Exploit Guard has blocked an operation that is not allowed by your IT administrator.
+- **Event ID 1122**: Microsoft Defender Exploit Guard audited an operation that is not allowed by your IT administrator.
+- **Event ID 1125**: Audit mode: Microsoft Defender Exploit Guard would have blocked a potentially dangerous network connection.
+- **Event ID 1126**: Block mode: Microsoft Defender Exploit Guard has blocked a potentially dangerous network connection.
+- **Event ID 1129**: A user has allowed a blocked Microsoft Defender Exploit Guard operation.
+- **Event ID 1131**: Microsoft Defender ASR has blocked an operation that your administrator doesn't allow.
+- **Event ID 1132**: Microsoft Defender ASR has audited an operation.
+- **Event ID 1133**: Microsoft Defender ASR has blocked an operation that your administrator doesn't allow.
+- **Event ID 1134**: Microsoft Defender ASR has audited an operation.
+- **Event ID 5007**: Configuration has changed. If this is an unexpected event you should review the settings as this may be the result of malware.
 """)
+
+st.code("""
+# Simple PowerShell command to export ASR event logs to a CSV file:
+Get-WinEvent -LogName "Microsoft-Windows-Windows Defender/Operational" | Where-Object {1121, 1122, 1125, 1126, 1129, 1131, 1132, 1133, 1134, 5007 -contains $_.Id} | Select-Object TimeCreated, Id, LevelDisplayName, Message | Export-Csv -NoTypeInformation -Path "ASR_EventLogs.csv"
+""", language="powershell")
 
 st.header("Registry Modifications by ASR")
 st.write("""
