@@ -73,6 +73,9 @@ Set-MpPreference -AttackSurfaceReductionRules_Ids <RuleID> -AttackSurfaceReducti
 
 # To set a rule to Audit mode:
 Set-MpPreference -AttackSurfaceReductionRules_Ids <RuleID> -AttackSurfaceReductionRules_Actions AuditMode
+
+# Enable all Rules in AuditMode
+(Get-MpPreference).AttackSurfaceReductionRules_Ids | Foreach {Add-MpPreference -AttackSurfaceReductionRules_Ids $_ -AttackSurfaceReductionRules_Actions AuditMode}
 """, language="powershell")
 
 st.header("Listing ASR Rules")
@@ -213,19 +216,29 @@ st.write("""
 Exclusions in Attack Surface Reduction (ASR) allow you to define specific files, folders, or processes that the ASR rules should ignore. This is particularly useful in scenarios where you know certain applications or files are safe and you want to prevent them from being falsely flagged or blocked by ASR rules. However, it's important to use exclusions judiciously as they can potentially create security gaps.
 """)
 
-st.subheader("Creating Exclusions")
-
-st.write("""
-To create an exclusion, you need to use the `Set-MpPreference` cmdlet in PowerShell. Here's the general syntax for adding an exclusion:
+st.markdown("""
+1. **General Exclusions**: These exclusions apply to all ASR rules. Use the `-AttackSurfaceReductionOnlyExclusions` parameter to set these exclusions.
+2. **Rule-Specific Exclusions**: These exclusions apply to a specific ASR rule. Use the `-AttackSurfaceReductionRules_RuleSpecificExclusions_Id` and `-AttackSurfaceReductionRules_RuleSpecificExclusions` parameters to set these exclusions.
 """)
 
 st.code("""
-Set-MpPreference -AddAttackSurfaceReductionRuleExclusions -Paths "<Path to exclude>"
+# General Exclusions
+Set-MpPreference -AttackSurfaceReductionOnlyExclusions "C:\\path\\to\\exclude"
+
+# Rule-Specific Exclusions
+Set-MpPreference -AttackSurfaceReductionRules_RuleSpecificExclusions_Id "<RuleID>" -AttackSurfaceReductionRules_RuleSpecificExclusions "C:\\path\\to\\exclude"
 """, language="powershell")
 
+st.subheader("Reviewing and Managing Exclusions")
+
 st.write("""
-Replace `<Path to exclude>` with the actual path of the file or folder you want to exclude. You can add multiple paths by separating them with commas.
+You can review and manage your existing exclusions using the `Get-MpPreference` cmdlet in PowerShell.
 """)
+
+st.code("""
+# Reviewing General Exclusions
+Get-MpPreference | Select-Object AttackSurfaceReductionOnlyExclusions
+""", language="powershell")
 
 st.subheader("Types of Exclusions")
 
@@ -254,11 +267,19 @@ You can review and manage your existing exclusions using the `Get-MpPreference` 
 """)
 
 st.code("""
-Get-MpPreference | Select-Object AttackSurfaceReductionRuleExclusions
+Get-MpPreference | Select-Object AttackSurfaceReductionOnlyExclusions
 """, language="powershell")
 
 st.write("""
 This command returns a list of all paths that are currently excluded from ASR rules.
+""")
+
+st.code("""
+Get-MpPreference | Select-Object AttackSurfaceReductionRules_RuleSpecificExclusions
+""", language="powershell")
+
+st.write("""
+This command returns a list of all paths that are currently excluded from specific ASR rules.
 """)
 
 st.header("Examples of Exclusion Paths")
@@ -308,25 +329,10 @@ st.write("""
 - Be cautious when using wildcards as they can potentially exclude more than intended.
 - Verify the correct functioning of exclusions in audit mode before applying them.
 - Regularly review your exclusion lists to ensure they are up-to-date.
+- Per-rule exclusions cannot currently be configured by using PowerShell or Group Policy.
 """)
 
 st.caption("[Detailed guidelines on using wildcards and environment variables](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/configure-extension-file-exclusions-microsoft-defender-antivirus?view=o365-worldwide)")
-
-
-st.subheader("Reviewing and Managing Exclusions")
-
-st.write("""
-To review your current exclusions, use the `Get-MpPreference` cmdlet in PowerShell. This command lists all exclusion paths set in your ASR configuration.
-""")
-
-st.code("""
-$mpPrefs = Get-MpPreference
-$mpPrefs.AttackSurfaceReductionRuleExclusions
-""", language="powershell")
-
-st.write("""
-The above command will display the paths that are currently excluded from ASR rules.
-""")
 
 st.header("Conclusion and Additional Resources")
 st.write("""

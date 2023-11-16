@@ -28,27 +28,25 @@ mode = None
 enable_all = st.checkbox("Enable All Rules")
 if enable_all:
     global_mode = st.selectbox("Select mode for all rules:", ["Block", "Audit", "Warn"])
+    st.code("(Get-MpPreference).AttackSurfaceReductionRules_Ids | Foreach {Add-MpPreference -AttackSurfaceReductionRules_Ids $_ -AttackSurfaceReductionRules_Actions " + global_mode + "}", language="powershell")
 
 for rule_name, rule_id in asr_rules.items():
     with st.expander(f"{rule_name} ({rule_id})"):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            enable = st.checkbox("Enable", key=f"enable_{rule_id}", value=enable_all)
+            enable = st.checkbox("Enable", key=f"enable_{rule_id}")
 
         with col2:
             disable = st.checkbox("Disable", key=f"disable_{rule_id}")
 
         with col3:
-            if enable_all:
-                st.radio("Mode:", ["Block", "Audit", "Warn"], key=f"mode_{rule_id}", index=["Block", "Audit", "Warn"].index(global_mode))
-            else:
-                mode = st.radio("Mode:", ["Block", "Audit", "Warn"], key=f"mode_{rule_id}")
+            mode = st.radio("Mode:", ["Block", "Audit", "Warn"], key=f"mode_{rule_id}")
 
         with col4:
             exclusion = st.text_input("Exclusions (Optional)", key=f"exclusion_{rule_id}")
 
-        user_inputs[rule_id] = {'enable': enable, 'disable': disable, 'mode': global_mode if enable_all else mode, 'exclusion': exclusion}
+        user_inputs[rule_id] = {'enable': enable, 'disable': disable, 'mode': mode, 'exclusion': exclusion}
 
         mode_colors = {
             "Audit": "orange",
@@ -75,8 +73,9 @@ if st.button("Generate Command"):
         if inputs['enable'] and not inputs['disable']:
             mode_grouping[inputs['mode']].append(rule_id)
             if inputs['exclusion']:
-                exclusion_command = f"Set-MpPreference -AddAttackSurfaceReductionRuleExclusions -AttackSurfaceReductionRules_Ids {rule_id} -Exclusions {inputs['exclusion']}"
+                exclusion_command = f"Set-MpPreference -AddAttackSurfaceReductionRuleExclusions -Exclusions {inputs['exclusion']}"
                 exclusion_commands.append(exclusion_command)
+                st.caption("Unfortunately, exclusions via PowerShell are not possible per rule. This will add the exclusion to all rules.")
         elif inputs['disable']:
             mode_grouping["Disabled"].append(rule_id)
 
