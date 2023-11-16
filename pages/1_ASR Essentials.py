@@ -337,7 +337,6 @@ st.write("""
 - Be cautious when using wildcards as they can potentially exclude more than intended.
 - Verify the correct functioning of exclusions in audit mode before applying them.
 - Regularly review your exclusion lists to ensure they are up-to-date.
-- Per-rule exclusions cannot currently be configured by using PowerShell or Group Policy.
 """)
 
 st.caption("[Detailed guidelines on using wildcards and environment variables](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/configure-extension-file-exclusions-microsoft-defender-antivirus?view=o365-worldwide)")
