@@ -364,22 +364,25 @@ def determine_file_extension(script):
     else:
         return '.txt'
 
+search_term = st.text_input("Search for a rule")
+
 for rule_name, rule_info in asr_rules.items():
-    with st.expander(rule_name):
-        st.write(rule_info["description"])
+    if search_term.lower() in rule_name.lower():
+        with st.expander(rule_name, expanded=False):
+            st.write(rule_info["description"])
         
-        if "scripts" in rule_info:
-            for i, script_info in enumerate(rule_info["scripts"]):
-                if isinstance(script_info["script"], list):
-                    script = "\n".join(item["script"] for item in script_info["script"])
-                else:
-                    script = script_info["script"]
-                st.code(script, language="vb")
-                file_extension = determine_file_extension(script)
-                download_filename = f"{rule_name.replace(' ', '_')}_script_{i+1}{file_extension}"
-                st.download_button(
-                    label=f"Download Script {i+1}",
-                    data=script,
-                    file_name=download_filename,
-                    mime="text/plain"
-                )
+            if "scripts" in rule_info:
+                for i, script_info in enumerate(rule_info["scripts"]):
+                    if isinstance(script_info["script"], list):
+                        script = "\n".join(item["script"] for item in script_info["script"])
+                    else:
+                        script = script_info["script"]
+                    st.code(script, language="vb")
+                    file_extension = determine_file_extension(script)
+                    download_filename = f"{rule_name.replace(' ', '_')}_script_{i+1}{file_extension}"
+                    st.download_button(
+                        label=f"Download Script {i+1}",
+                        data=script,
+                        file_name=download_filename,
+                        mime="text/plain"
+                    )
