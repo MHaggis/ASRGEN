@@ -259,8 +259,13 @@ asr_rules = {
             
             {
                 "script": """
-                Private Declare Function MessageBox Lib "user32" Alias "MessageBoxA" _
-                    (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+                #If VBA7 Then
+                    Private Declare PtrSafe Function MessageBox Lib "user32" Alias "MessageBoxA" _
+                        (ByVal hwnd As LongPtr, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+                #Else
+                    Private Declare Function MessageBox Lib "user32" Alias "MessageBoxA" _
+                        (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+                #End If
 
                 Sub ShowMessageBox()
                     Call MessageBox(0, "Hello, World!", "API Test", 0)
