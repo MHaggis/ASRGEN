@@ -331,7 +331,7 @@ asr_rules = {
         "scripts": []
     },
     "Block execution of potentially obfuscated scripts": {
-        "description": "This rule detects suspicious properties within an obfuscated script. Script obfuscation is a common technique that both malware authors and legitimate applications use to hide intellectual property or decrease script loading times. Malware authors also use obfuscation to make malicious code harder to read, which hampers close scrutiny by humans and security software. [Further details and references will be added here.]",
+        "description": "This rule detects suspicious properties within an obfuscated script. Script obfuscation is a common technique that both malware authors and legitimate applications use to hide intellectual property or decrease script loading times. Malware authors also use obfuscation to make malicious code harder to read, which hampers close scrutiny by humans and security software.\n\nImportant\n\nPowerShell scripts are now supported for the \"Block execution of potentially obfuscated scripts\" rule.\n\nIntune name: Obfuscated js/vbs/ps/macro code\n\nConfiguration Manager name: Block execution of potentially obfuscated scripts\n\nGUID: 5beb7efe-fd9a-4556-801d-275e5ffc04cc\n\nAdvanced hunting action type:\n\nAsrObfuscatedScriptAudited\nAsrObfuscatedScriptBlocked\n\nDependencies: Microsoft Defender Antivirus, AntiMalware Scan Interface (AMSI)",
         "scripts": []
     },
     "Block Office applications from injecting code into other processes": {
@@ -347,7 +347,7 @@ asr_rules = {
         "scripts": []
     },
     "Block Webshell creation for Servers": {
-        "description": "Block Webshell creation for Servers\nGUID: a8f5898e-1dc8-49a9-9878-85004b8a61e6\n\nSupported operating systems:\n\nWindows 11",
+        "description": "This rule blocks web shell script creation on Microsoft Server, Exchange Role.\n\nA web shell script is a specifically crafted script that allows an attacker to control the compromise server. A web shell may include functionalities such as receiving and executing malicious commands, downloading and executing malicious files, stealing and exfiltrating credentials and sensitive information, identifying potential targets etc.\n\nIntune name: Block Webshell creation for Servers\n\nGUID: a8f5898e-1dc8-49a9-9878-85004b8a61e6",
         "scripts": []
     },
     "Use advanced protection against ransomware": {

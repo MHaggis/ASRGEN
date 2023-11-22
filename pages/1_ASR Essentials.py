@@ -1,8 +1,74 @@
 import streamlit as st
+from streamlit.components.v1 import html
+from streamlit_js_eval import streamlit_js_eval
+from time import sleep
+
 
 st.set_page_config(page_title="ASR Essentials", layout="wide")
 
 st.title("Attack Surface Reduction (ASR) Essentials")
+
+if "svg_height" not in st.session_state:
+    st.session_state["svg_height"] = 200
+
+if "previous_mermaid" not in st.session_state:
+    st.session_state["previous_mermaid"] = ""
+
+if "previous_font_size" not in st.session_state:
+    st.session_state["previous_font_size"] = 18
+
+def mermaid(code: str, font_size: int = 18) -> None:
+    html(
+        f"""
+        <pre class="mermaid">
+            {code}
+        </pre>
+        <script type="module">
+            import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+            mermaid.initialize({{ startOnLoad: true, theme: "default", themeVariables: {{ fontSize: "{font_size}px" }} }});
+        </script>
+        """,
+        height=st.session_state["svg_height"] + 50,
+    )
+
+# Your mermaid code
+code = """
+graph LR
+    A["Endpoint Activity (File Execution, Script Run, etc.)"] --> B["ASR Rule Evaluation"]
+    B --> C{"ASR Rule Triggered?"}
+    C -->|Yes| D["Enforce ASR Action (Block/Warn/Audit)"]
+    C -->|No| E["Activity Allowed"]
+    D --> F{"Action Type"}
+    F -->|Block| G["Activity Blocked"]
+    F -->|Warn| H["User Warning & Decision"]
+    F -->|Audit| I["Activity Logged for Review"]
+    subgraph "Adversarial Actions"
+    J["Exploit Vulnerabilities"] -.-> B
+    K["Bypass ASR Rules"] -.-> B
+    L["Mimic Legitimate Behavior"] -.-> B
+    end
+    subgraph "Defender's Monitoring and Response"
+    M["Monitor ASR Alerts and Logs"] -.-> F
+    N["Review and Analyze ASR Incidents"] -.-> F
+    O["Update and Refine ASR Rules"] -.-> B
+    end
+"""
+
+mermaid(code, 18)
+
+if (
+    code != st.session_state["previous_mermaid"]
+    or 18 != st.session_state["previous_font_size"]
+):
+    st.session_state["previous_mermaid"] = code
+    st.session_state["previous_font_size"] = 18
+    sleep(1)
+    streamlit_js_eval(
+        js_expressions='parent.document.getElementsByTagName("iframe")[0].contentDocument.getElementsByClassName("mermaid")[0].getElementsByTagName("svg")[0].getBBox().height',
+        key="svg_height",
+    )
+
+
 
 toc = """
 1. **[Introduction](#what-is-attack-surface-reduction)**
