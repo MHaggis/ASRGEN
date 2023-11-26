@@ -1,12 +1,15 @@
 name: Release Workflow
 
 on:
-    release:
-      types: [created]
+  workflow_run:
+    workflows: ["Generate ASR Atomic Test Binaries"]
+    types:
+      - completed
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - uses: actions/checkout@v2
     - name: Download the Compiled Binary
