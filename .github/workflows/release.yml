@@ -5,19 +5,31 @@ on:
     types: [created]
 
 jobs:
-  build-and-upload:
+  build:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-
     - name: Set up MSVC
       uses: ilammy/msvc-dev-cmd@v1
-
     - name: Compile C++ code for release
       run: |
         cd src
         cl /EHsc /W4 /Fe:../lsass_ASR_test.exe lsass_test.cpp
+    - name: Upload Executable as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: lsass_ASR_test
+        path: lsass_ASR_test.exe
 
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download the Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: lsass_ASR_test
     - name: Upload Binary to Release
       uses: skx/github-action-publish-binaries@release-2.0
       env:
