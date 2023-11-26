@@ -32,4 +32,20 @@ jobs:
       with:
         files: lsass_ASR_test.exe
         tag_name: ${{ env.TAG_NAME }}
-
+    - name: Update Download Link in File
+      env:
+        TAG_NAME: ${{ env.TAG_NAME }}
+      run: |
+        $releaseUrl = "https://github.com/MHaggis/ASRGEN/releases/download/${{ env.TAG_NAME }}/lsass_ASR_test.exe"
+        $filePath = "pages\2_ASR Atomic Testing.py"
+        $fileContent = Get-Content $filePath
+        $updatedContent = $fileContent -replace 'The generated binary may be found here:.*', "The generated binary may be found here: $releaseUrl"
+        Set-Content -Path $filePath -Value $updatedContent
+      shell: pwsh
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "github-actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add $filePath
+        git commit -m "Update download link for lsass_ASR_test.exe"
+        git push
