@@ -37,10 +37,15 @@ jobs:
         TAG_NAME: ${{ env.TAG_NAME }}
       run: |
         $releaseUrl = "https://github.com/MHaggis/ASRGEN/releases/download/${{ env.TAG_NAME }}/lsass_ASR_test.exe"
+        Write-Output "Release URL: $releaseUrl"
         $filePath = "pages\2_ASR Atomic Testing.py"
+        Write-Output "File Path: $filePath"
         $fileContent = Get-Content $filePath
+        Write-Output "File Content: $fileContent"
         $updatedContent = $fileContent -replace 'The generated binary may be found here:.*', "The generated binary may be found here: $releaseUrl"
+        Write-Output "Updated Content: $updatedContent"
         Set-Content -Path $filePath -Value $updatedContent
+        Write-Output "File content updated successfully."
       shell: pwsh
     - name: Commit and Push Changes
       run: |
