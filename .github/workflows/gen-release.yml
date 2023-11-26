@@ -12,10 +12,10 @@ jobs:
     - name: Download the Compiled Binary
       uses: actions/download-artifact@v2
       with:
-        name: lsass_ASR_test # Replace with the name of your artifact
+        name: lsass_ASR_test
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
       with:
-        files: lsass_ASR_test.exe # Replace with the path to your downloaded artifact
+        files: lsass_ASR_test.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
