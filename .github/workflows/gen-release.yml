@@ -19,6 +19,14 @@ jobs:
         cl /EHsc /W4 /Fe:lsass_ASR_test.exe lsass_test.cpp
         Move lsass_ASR_test.exe ../
 
+    - name: Generate and Push Tag
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        TAG_NAME="release-$(date +%Y%m%d%H%M%S)"
+        git tag $TAG_NAME
+        git push origin $TAG_NAME
+
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
       with:
