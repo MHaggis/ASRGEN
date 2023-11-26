@@ -1,21 +1,34 @@
-name: Release Workflow
+name: Compile and Release Binary
 
 on:
-  workflow_run:
-    workflows: ["Generate ASR Atomic Test Binaries"]
-    types:
-      - completed
+  release:
+    types: [created]
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  build-and-release:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Compile C++ code
+      run: |
+        cd src
+        cl /EHsc /W4 /Fe:lsass_ASR_test.exe lsass_test.cpp
+
+    - name: Upload Executable as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: lsass_ASR_test
+        path: lsass_ASR_test.exe
+
     - name: Download the Compiled Binary
       uses: actions/download-artifact@v2
       with:
         name: lsass_ASR_test
+
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
       with:
