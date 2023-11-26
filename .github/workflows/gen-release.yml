@@ -1,11 +1,10 @@
-name: Compile and Release Binary
+name: Compile, Tag, and Release Binary
 
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build-tag-release:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,17 +18,19 @@ jobs:
         cl /EHsc /W4 /Fe:lsass_ASR_test.exe lsass_test.cpp
         Move lsass_ASR_test.exe ../
 
-    - name: Generate and Push Tag
+    - name: Create and Push Tag
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        TAG_NAME="release-$(date +%Y%m%d%H%M%S)"
+        TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
         git tag $TAG_NAME
         git push origin $TAG_NAME
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
       with:
         files: lsass_ASR_test.exe
+        tag_name: ${{ env.TAG_NAME }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
