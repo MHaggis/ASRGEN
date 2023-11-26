@@ -42,7 +42,7 @@ jobs:
         Write-Output "File Path: $filePath"
         $fileContent = Get-Content $filePath
         Write-Output "File Content: $fileContent"
-        $updatedContent = $fileContent -replace 'The generated binary may be found here:.*', "The generated binary may be found here: $releaseUrl"
+        $updatedContent = $fileContent -replace 'The generated binary may be found here:.*', "The generated binary may be found here: $releaseUrl","
         Write-Output "Updated Content: $updatedContent"
         Set-Content -Path $filePath -Value $updatedContent
         Write-Output "File content updated successfully."
