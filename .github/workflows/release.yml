@@ -1,0 +1,26 @@
+name: Upload Release Binary
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-upload:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Compile C++ code for release
+      run: |
+        cd src
+        cl /EHsc /W4 /Fe:../lsass_ASR_test.exe lsass_test.cpp
+
+    - name: Upload Binary to Release
+      uses: skx/github-action-publish-binaries@release-2.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        args: lsass_ASR_test.exe
