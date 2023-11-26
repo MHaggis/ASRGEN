@@ -8,29 +8,28 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-
     - name: Set up MSVC
       uses: ilammy/msvc-dev-cmd@v1
-
     - name: Compile C++ code
       run: |
         cd src
         cl /EHsc /W4 /Fe:lsass_ASR_test.exe lsass_test.cpp
         Move lsass_ASR_test.exe ../
-
     - name: Create and Push Tag
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
+        $TAG_NAME="release-$(Get-Date -Format 'yyyyMMddHHmmss')"
         git tag $TAG_NAME
         git push origin $TAG_NAME
-        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-
+        echo "TAG_NAME=$TAG_NAME" | Out-File -Append -FilePath $env:GITHUB_ENV
+      shell: pwsh
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
+      env:
+        TAG_NAME: ${{ env.TAG_NAME }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: lsass_ASR_test.exe
         tag_name: ${{ env.TAG_NAME }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
