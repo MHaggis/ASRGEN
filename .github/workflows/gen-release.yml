@@ -17,20 +17,7 @@ jobs:
       run: |
         cd src
         cl /EHsc /W4 /Fe:lsass_ASR_test.exe lsass_test.cpp
-
-    - name: Upload Compiled Binary as Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: lsass_ASR_test
-        path: lsass_ASR_test.exe
-
-    - name: Checkout Repository (again for release)
-      uses: actions/checkout@v2
-
-    - name: Download Compiled Binary
-      uses: actions/download-artifact@v2
-      with:
-        name: lsass_ASR_test
+        Move lsass_ASR_test.exe ../
 
     - name: Create Release and Upload Binary
       uses: softprops/action-gh-release@v1
