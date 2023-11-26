@@ -10,7 +10,10 @@ DWORD FindLsassProcess() {
         pe32.dwSize = sizeof(PROCESSENTRY32);
         if (Process32First(hSnapshot, &pe32)) {
             do {
-                if (_wcsicmp(pe32.szExeFile, L"lsass.exe") == 0) {
+                WCHAR wText[260];
+                MultiByteToWideChar(CP_ACP, 0, pe32.szExeFile, -1, wText, 260);
+
+                if (_wcsicmp(wText, L"lsass.exe") == 0) {
                     CloseHandle(hSnapshot);
                     return pe32.th32ProcessID;
                 }
