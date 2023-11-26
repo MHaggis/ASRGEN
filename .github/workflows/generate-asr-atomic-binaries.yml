@@ -1,0 +1,24 @@
+name: Generate ASR Atomic Test Binaries
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Compile C++ code
+      run: |
+        cd src
+        cl /EHsc /W4 /Fe:../lsass_ASR_test.exe lsass_test.cpp
+
+    - name: Upload Executable as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: lsass_ASR_test
+        path: lsass_ASR_test.exe
