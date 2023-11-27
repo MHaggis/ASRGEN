@@ -390,8 +390,32 @@ asr_rules = {
         "scripts": []
     },
     "Block persistence through WMI event subscription": {
-        "description": "This rule prevents malware from abusing WMI to attain persistence on a device. Fileless threats employ various tactics to stay hidden, to avoid being seen in the file system, and to gain periodic execution control. Some threats can abuse the WMI repository and event model to stay hidden. [Further details and references will be added here.]",
-        "scripts": []
+        "description": "This rule prevents malware from abusing WMI to attain persistence on a device.\n\nImportant\n\nFile and folder exclusions don't apply to this attack surface reduction rule.\n\nFileless threats employ various tactics to stay hidden, to avoid being seen in the file system, and to gain periodic execution control. Some threats can abuse the WMI repository and event model to stay hidden.\n\nIntune name: Persistence through WMI event subscription\n\nConfiguration Manager name: Not available\n\nGUID: e6db77e5-3df2-4cf1-b95a-636979351e5b\n\nAdvanced hunting action type:\n\nAsrPersistenceThroughWmiAudited\nAsrPersistenceThroughWmiBlocked\n\nDependencies: Microsoft Defender Antivirus, RPC\n\nReferences:\n\nhttps://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-persistence-through-wmi-event-subscription\n\n https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1546.003/T1546.003.md#atomic-test-2---persistence-via-wmi-event-subscription---activescripteventconsumer",
+        "scripts": [
+            {
+                "script": """
+                $FilterArgs = @{name='AtomicRedTeam-WMIPersistence-ActiveScriptEventConsumer-Example';
+                EventNameSpace='root\CimV2';
+                QueryLanguage="WQL";
+                Query="SELECT * FROM __InstanceModificationEvent WITHIN 60 WHERE TargetInstance ISA 'Win32_PerfFormattedData_PerfOS_System' AND TargetInstance.SystemUpTime >= 240 AND TargetInstance.SystemUpTime < 325"};
+                $Filter=Set-WmiInstance -Class __EventFilter -Namespace "root\subscription" -Arguments $FilterArgs
+
+                $ConsumerArgs = @{name='AtomicRedTeam-WMIPersistence-ActiveScriptEventConsumer-Example';
+                                ScriptingEngine='VBScript';
+                                ScriptText='
+                                Set objws = CreateObject("Wscript.Shell")
+                                objws.Run "notepad.exe", 0, True
+                                '}
+                $Consumer=Set-WmiInstance -Namespace "root\subscription" -Class ActiveScriptEventConsumer -Arguments $ConsumerArgs
+
+                $FilterToConsumerArgs = @{
+                Filter = $Filter;
+                Consumer = $Consumer;
+                }
+                $FilterToConsumerBinding = Set-WmiInstance -Namespace 'root/subscription' -Class '__FilterToConsumerBinding' -Arguments $FilterToConsumerArgs
+                """
+            }
+        ]
     },
     "Block Webshell creation for Servers": {
         "description": "This rule blocks web shell script creation on Microsoft Server, Exchange Role.\n\nA web shell script is a specifically crafted script that allows an attacker to control the compromise server. A web shell may include functionalities such as receiving and executing malicious commands, downloading and executing malicious files, stealing and exfiltrating credentials and sensitive information, identifying potential targets etc.\n\nIntune name: Block Webshell creation for Servers\n\nGUID: a8f5898e-1dc8-49a9-9878-85004b8a61e6",
