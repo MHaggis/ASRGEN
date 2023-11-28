@@ -417,3 +417,10 @@ st.markdown("[MICROSOFT DEFENDER ANTIVIRUS ATTACK SURFACE REDUCTION RULES BYPASS
 st.markdown("[Windows Defender Exploit Guard ASR Rules for Office](https://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office)")
 st.markdown("[Windows Defender Exploit Guard ASR Obfuscated Script Rule](https://www.darkoperator.com/blog/2017/11/8/windows-defender-exploit-guard-asr-obfuscated-script-rule)")
 st.markdown("[infosecn1nja GIST](https://gist.github.com/infosecn1nja/24a733c5b3f0e5a8b6f0ca2cf75967e3)")
+
+st.sidebar.image("assets/logo.png", width=300)
+
+html_code = """
+<iframe srcdoc="<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#29abe0', 'P5P61I35A');kofiwidget2.draw();</script>" width="100%" height="300" style="border:0" allowtransparency="true" loading="lazy"></iframe>
+"""
+st.sidebar.markdown(html_code, unsafe_allow_html=True)
