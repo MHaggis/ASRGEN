@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit.components.v1 import html
 from streamlit_js_eval import streamlit_js_eval
 from time import sleep
-
+from asr import html_code
 
 st.set_page_config(page_title="ASR Essentials", layout="wide")
 
@@ -420,7 +420,4 @@ st.markdown("[infosecn1nja GIST](https://gist.github.com/infosecn1nja/24a733c5b3
 
 st.sidebar.image("assets/logo.png", width=300)
 
-html_code = """
-<iframe srcdoc="<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#29abe0', 'P5P61I35A');kofiwidget2.draw();</script>" width="100%" height="300" style="border:0" allowtransparency="true" loading="lazy"></iframe>
-"""
 st.sidebar.markdown(html_code, unsafe_allow_html=True)

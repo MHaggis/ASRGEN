@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit.components.v1 import html
+from asr import html_code
 
 st.set_page_config(page_title="ASR Atomic Testing", layout="wide")
 
@@ -468,7 +469,4 @@ for rule_name, rule_info in asr_rules.items():
 
 st.sidebar.image("assets/logo.png", width=300)
 
-html_code = """
-<iframe srcdoc="<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#29abe0', 'P5P61I35A');kofiwidget2.draw();</script>" width="100%" height="300" style="border:0" allowtransparency="true" loading="lazy"></iframe>
-"""
 st.sidebar.markdown(html_code, unsafe_allow_html=True)
