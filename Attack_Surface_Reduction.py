@@ -26,9 +26,9 @@ with col1:
 
     3️⃣ <a href="ASR_Atomic_Testing" target="_self">ASR Atomic Testing</a> 🧪: A collection of scripts for testing the effectiveness of ASR rules. 🔬
     
-    4️⃣ <a href="4_ASR_PwSh_Group_Policy_Generator" target="_self">ASR PwSh Group Policy Generator</a> 🛠️: A tool for generating Group Policy Objects (GPO) with PowerShell. 📝
+    4️⃣ <a href="ASR_PwSh_Group_Policy_Generator" target="_self">ASR PwSh Group Policy Generator</a> 🛠️: A tool for generating Group Policy Objects (GPO) with PowerShell. 📝
     
-    5️⃣ <a href="5_ASR_Read_Pol_File" target="_self">ASR .pol File Reader</a> 📖: A tool for reading and displaying the contents of GPO .pol files. 📝
+    5️⃣ <a href="ASR_Read_Pol_File" target="_self">ASR .pol File Reader</a> 📖: A tool for reading and displaying the contents of GPO .pol files. 📝
 
     The ASR Generator is an ongoing project, and we are constantly working to improve its features and capabilities. We welcome feedback and suggestions from our users to help us make this tool even better 🙌. 💡
 
