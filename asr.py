@@ -20,5 +20,5 @@ asr_rules = {
 
 html_code = """
 <iframe srcdoc="<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#29abe0', 'P5P61I35A');kofiwidget2.draw();</script>" width="100%" height="50" style="border:0" allowtransparency="true" loading="lazy"></iframe>
-<iframe src="https://github.com/sponsors/MHaggis/button" title="Sponsor MHaggis" height="32" width="114" style="border: 0; border-radius: 6px;" target="_blank"></iframe>
+<a href="https://github.com/sponsors/MHaggis" target="_blank" style="display: inline-block; background-color: #0366d6; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">Sponsor MHaggis</a>
 """
