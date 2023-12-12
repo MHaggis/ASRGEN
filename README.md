@@ -1,7 +1,9 @@
 
 # ASRGEN
 
-> ULTRA Alpha. The name will prob change, and so will many things.
+> _now BETA_
+
+Access ASRGEN here on https://asrgen.streamlit.app/
 
 ### Project Overview
 
@@ -21,11 +23,19 @@ The content in this repository is intended for research and educational purposes
 
 The codebase is organized into several Python scripts. Here's a brief overview of some key files:
 
-- `pages/1_ASR Essentials.py`: This Python script uses Streamlit to generate an interactive web page that provides a comprehensive overview of ASR rules.
+The project consists of the following key components:
 
-- `pages/2_ASR Atomic Testing.py`: This Python script generates an interactive web page for testing ASR rules.
+- 1️⃣ ASR Configurator 🛠️: A tool for configuring ASR rules and generating the corresponding PowerShell commands. 📝
 
-- `asr.ps1`: This PowerShell script provides a command-line interface for managing ASR rules.
+- 2️⃣ ASR Essentials 📚: A guide to the basics of ASR, including how to use ASR on the command line, how to list ASR rules, and how to understand ASR event codes. 🤓
+
+- 3️⃣ ASR Atomic Testing 🧪: A collection of scripts for testing the effectiveness of ASR rules. 🔬
+
+- 4️⃣ ASR PwSh Group Policy Generator 🛠️: A tool for generating Group Policy Objects (GPO) with PowerShell. 📝
+
+- 5️⃣ ASR .pol File Reader 📖: A tool for reading and displaying the contents of GPO .pol files. 📝
+
+- 6️⃣ `asr.ps1`: This PowerShell script provides a command-line interface for managing ASR rules.
 
 ### Contributing
 
