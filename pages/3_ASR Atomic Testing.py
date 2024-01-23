@@ -168,21 +168,25 @@ asr_rules = {
     },
     "Block JavaScript or VBScript from launching downloaded executable content": {
         "description": "Block JavaScript or VBScript from launching downloaded executable content\nThis rule prevents scripts from launching potentially malicious downloaded content. Malware written in JavaScript or VBScript often acts as a downloader to fetch and launch other malware from the Internet.\n\nAlthough not common, line-of-business applications sometimes use scripts to download and launch installers.\n\nIntune name: js/vbs executing payload downloaded from Internet (no exceptions)\n\nConfiguration Manager name: Block JavaScript or VBScript from launching downloaded executable content\n\nGUID: d3e037e1-3eb8-44c8-a917-57927947596d\n\nAdvanced hunting action type:\n\nAsrScriptExecutableDownloadAudited\nAsrScriptExecutableDownloadBlocked\n\nDependencies: Microsoft Defender Antivirus, AMSI\n\nreference: https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-javascript-or-vbscript-from-launching-downloaded-executable-content",
-        "script": """
-        Dim objShell
-        Dim xHttp: Set xHttp = createobject("Microsoft.XMLHTTP")
-        Dim bStrm: Set bStrm = createobject("Adodb.Stream")
-        xHttp.Open "GET", "https://the.earth.li/~sgtatham/putty/latest/w32/putty.exe", False
-        xHttp.Send
-        with bStrm
-            .type = 1
-            .open
-            .write xHttp.responseBody
-            .savetofile "c:\\temp\\putty.exe", 2
-        end with
-        Set objShell = WScript.CreateObject("WScript.Shell")
-        objShell.Exec("c:\\temp\\putty.exe")
-        """
+        "scripts": [
+            {
+                "script": """
+                Dim objShell
+                Dim xHttp: Set xHttp = createobject("Microsoft.XMLHTTP")
+                Dim bStrm: Set bStrm = createobject("Adodb.Stream")
+                xHttp.Open "GET", "https://the.earth.li/~sgtatham/putty/latest/w32/putty.exe", False
+                xHttp.Send
+                with bStrm
+                    .type = 1
+                    .open
+                    .write xHttp.responseBody
+                    .savetofile "c:\\temp\\putty.exe", 2
+                end with
+                Set objShell = WScript.CreateObject("WScript.Shell")
+                objShell.Exec("c:\\temp\\putty.exe")
+                """
+            }
+        ]
     },
     "Block process creations originating from PSExec and WMI commands": {
         "description": "Block process creations originating from PSExec and WMI commands\nThis rule blocks processes created through PsExec and WMI from running. Both PsExec and WMI can remotely execute code. There's a risk of malware abusing functionality of PsExec and WMI for command and control purposes, or to spread an infection throughout an organization's network.\n\n **Warning**\n\nOnly use this rule if you're managing your devices with Intune or another MDM solution. This rule is incompatible with management through Microsoft Endpoint Configuration Manager because this rule blocks WMI commands the Configuration Manager client uses to function correctly.\n\nIntune name: Process creation from PSExec and WMI commands\n\nConfiguration Manager name: Not applicable\n\nGUID: d1e49aac-8f56-4280-b9ba-993a6d77406c\n\nAdvanced hunting action type:\n\nAsrPsexecWmiChildProcessAudited\n\nAsrPsexecWmiChildProcessBlocked\n\nDependencies: Microsoft Defender Antivirus\n\nreference: https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-process-creations-originating-from-psexec-and-wmi-commands",
@@ -219,10 +223,14 @@ asr_rules = {
     },
     "Block untrusted and unsigned processes that run from USB": {
         "description": "Block untrusted and unsigned processes that run from USB\nWith this rule, admins can prevent unsigned or untrusted executable files from running from USB removable drives, including SD cards. Blocked file types include executable files (such as .exe, .dll, or .scr)\n\n **Important**\n\nFiles copied from the USB to the disk drive will be blocked by this rule if and when it's about to be executed on the disk drive.\n\nIntune name: Untrusted and unsigned processes that run from USB\n\nConfiguration Manager name: Block untrusted and unsigned processes that run from USB\n\nGUID: b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4\n\nAdvanced hunting action type:\n\nAsrUntrustedUsbProcessAudited\n\nAsrUntrustedUsbProcessBlocked\n\nDependencies: Microsoft Defender Antivirus\n\n\nreference: https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-untrusted-and-unsigned-processes-that-run-from-usb",
-        "script": """
-        xcopy /s UNSIGNED_ransomware_test_exe.exe %temp% /y
-        start %temp%\\UNSIGNED_ransomware_test_exe.exe
-        """
+        "scripts": [
+            {
+                "script": """
+                xcopy /s UNSIGNED_ransomware_test_exe.exe %temp% /y
+                start %temp%\\UNSIGNED_ransomware_test_exe.exe
+                """
+            }
+        ]
     },
     "Block Win32 API calls from Office macros": {
         "description": "This rule prevents VBA macros from calling Win32 APIs.\n\nOffice VBA enables Win32 API calls. Malware can abuse this capability, such as calling Win32 APIs to launch malicious shellcode without writing anything directly to disk. Most organizations don't rely on the ability to call Win32 APIs in their day-to-day functioning, even if they use macros in other ways.\n\nSupported operating systems:\n\nWindows 10, version 1709, Windows 11, Windows Server 2022, Windows Server version 1809, Windows Server 2019\n\nConfiguration Manager CB 1710\n\nIntune name: Win32 imports from Office macro code\n\nConfiguration Manager name: Block Win32 API calls from Office macros\n\nGUID: 92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b\n\nAdvanced hunting action type:\n\nAsrOfficeMacroWin32ApiCallsAudited\n\nAsrOfficeMacroWin32ApiCallsBlocked\n\nDependencies: Microsoft Defender Antivirus, AMSI\n\nreference:\n\nhttps://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/attack-surface-reduction-rules-reference?view=o365-worldwide#block-win32-api-calls-from-office-macros\n\nhttps://www.darkoperator.com/blog/2017/11/11/windows-defender-exploit-guard-asr-rules-for-office",
