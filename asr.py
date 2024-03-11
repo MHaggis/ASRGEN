@@ -16,6 +16,8 @@ asr_rules = {
 "Block Win32 API calls from Office macros": "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B",
 "Use advanced protection against ransomware": "C1DB55AB-C21A-4637-BB3F-A12568109D35",
 "Block Webshell creation for Servers": "A8F5898E-1DC8-49A9-9878-85004B8A61E6"
+"Block rebooting machine in Safe Mode (preview)": "33DDEDF1-C6E0-47CB-833E-DE6133960387",
+"Block use of copied or impersonated system tools (preview)": "C0033C00-D16D-4114-A5A0-DC9B3A7D2CEB",
 }
 
 html_code = """
