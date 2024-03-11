@@ -34,6 +34,8 @@ if enable_all:
         "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B" = "Block Win32 API calls from Office macros";
         "C1DB55AB-C21A-4637-BB3F-A12568109D35" = "Use advanced protection against ransomware";
         "A8F5898E-1DC8-49A9-9878-85004B8A61E6" = "Block Webshell creation for Servers";
+        "33DDEDF1-C6E0-47CB-833E-DE6133960387" = "Block rebooting machine in Safe Mode (preview)";
+        "C0033C00-D16D-4114-A5A0-DC9B3A7D2CEB" = "Block use of copied or impersonated system tools (preview)";
     }
     foreach ($id in $asrRuleIds.Keys) {
         Add-MpPreference -AttackSurfaceReductionRules_Ids $id -AttackSurfaceReductionRules_Actions """ + ps_action + """
