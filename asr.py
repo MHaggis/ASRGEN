@@ -15,9 +15,9 @@ asr_rules = {
 "Block untrusted and unsigned processes that run from USB": "B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4",
 "Block Win32 API calls from Office macros": "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B",
 "Use advanced protection against ransomware": "C1DB55AB-C21A-4637-BB3F-A12568109D35",
-"Block Webshell creation for Servers": "A8F5898E-1DC8-49A9-9878-85004B8A61E6"
+"Block Webshell creation for Servers": "A8F5898E-1DC8-49A9-9878-85004B8A61E6",
 "Block rebooting machine in Safe Mode (preview)": "33DDEDF1-C6E0-47CB-833E-DE6133960387",
-"Block use of copied or impersonated system tools (preview)": "C0033C00-D16D-4114-A5A0-DC9B3A7D2CEB",
+"Block use of copied or impersonated system tools (preview)": "C0033C00-D16D-4114-A5A0-DC9B3A7D2CEB"
 }
 
 html_code = """
