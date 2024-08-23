@@ -62,7 +62,7 @@ if st.button("Generate PowerShell Script"):  # Button to generate PowerShell scr
 
     # Link the GPO to an OU (optional)
     # Replace 'OU=MyOU,DC=example,DC=com' with the actual path to your OU
-    # Link-GPO -Name $gpoName -Target "OU=MyOU,DC=example,DC=com"
+    # New-GPLink -Name $gpoName -Target "OU=Workstations,DC=sevenkingdoms,DC=local"
     """
 
 st.code(ps_script, language='powershell')
