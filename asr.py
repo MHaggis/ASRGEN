@@ -371,3 +371,5 @@ asr_rule_descriptions = {
     Dependencies: Microsoft Defender Antivirus
     """
 }
+
+__all__ = ['intune_asr_rules', 'asr_rule_descriptions', 'asr_rules', 'html_code']
