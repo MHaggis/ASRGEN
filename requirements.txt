@@ -1,3 +1,4 @@
 streamlit
 streamlit-js-eval
 registrypol #https://pypi.org/project/registrypol/
+msal
