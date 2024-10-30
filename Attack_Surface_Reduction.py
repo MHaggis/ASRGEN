@@ -29,6 +29,8 @@ with col1:
     4️⃣ <a href="ASR_PwSh_Group_Policy_Generator" target="_self">ASR PwSh Group Policy Generator</a> 🛠️: A tool for generating Group Policy Objects (GPO) with PowerShell. 📝
     
     5️⃣ <a href="ASR_Read_Pol_File" target="_self">ASR .pol File Reader</a> 📖: A tool for reading and displaying the contents of GPO .pol files. 📝
+             
+    6️⃣ <a href="ASR_Intune_Policy_Generator" target="_self">ASR Intune Policy Generator</a> 📊: A tool for generating Intune policies for ASR rules. 📝
 
     The ASR Generator is an ongoing project, and we are constantly working to improve its features and capabilities. We welcome feedback and suggestions from our users to help us make this tool even better 🙌. 💡
 
