@@ -1,4 +1,3 @@
-
 # ASRGEN
 
 > _now BETA_
@@ -21,8 +20,6 @@ The content in this repository is intended for research and educational purposes
 
 ### Code Structure
 
-The codebase is organized into several Python scripts. Here's a brief overview of some key files:
-
 The project consists of the following key components:
 
 - 1️⃣ ASR Configurator 🛠️: A tool for configuring ASR rules and generating the corresponding PowerShell commands. 📝
@@ -35,7 +32,28 @@ The project consists of the following key components:
 
 - 5️⃣ ASR .pol File Reader 📖: A tool for reading and displaying the contents of GPO .pol files. 📝
 
-- 6️⃣ `asr.ps1`: This PowerShell script provides a command-line interface for managing ASR rules.
+- 6️⃣ ASR Intune Policy Generator 🔄: A web-based tool for creating and deploying ASR rules directly to Microsoft Intune. Features include:
+  - Interactive rule configuration
+  - Direct deployment to Intune
+  - JSON policy export
+  - Current configuration preview
+  - Policy listing and management
+
+### Features
+
+- PowerShell-based ASR rule management
+- Group Policy Object generation
+- .pol file analysis
+- Intune integration for cloud-based deployment
+- Interactive web interface
+- Atomic testing capabilities
+- Comprehensive documentation
+
+### Required Permissions for Intune Integration
+
+To use the Intune Policy Generator, your Azure AD app registration needs:
+- `DeviceManagementConfiguration.ReadWrite.All`
+- `DeviceManagementManagedDevices.ReadWrite.All`
 
 ### Contributing
 
