@@ -18,7 +18,8 @@ jobs:
         cl /EHsc /W4 /Fe:../lsass_ASR_test.exe lsass_test.cpp
 
     - name: Upload Executable as Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: lsass_ASR_test
         path: lsass_ASR_test.exe
+        retention-days: 180
