@@ -410,8 +410,15 @@ def get_categories() -> List[str]:
     """Get all unique categories"""
     return sorted(list(set(rule.category for rule in ASR_RULES.values())))
 
-def check_conflicts(selected_guids: List[str]) -> List[dict]:
-    """Check for conflicts in selected rules"""
+def check_conflicts(selected_guids: List[str]) -> List[Dict]:
+    """Check for conflicts in selected rules
+    
+    Args:
+        selected_guids: List of ASR rule GUIDs to check
+        
+    Returns:
+        List of conflicts found (each with rule1, rule2, message)
+    """
     conflicts = []
     for guid in selected_guids:
         rule = get_rule_by_guid(guid)

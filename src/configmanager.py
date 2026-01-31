@@ -15,7 +15,7 @@ class ConfigManager:
     CONFIG_DIR = Path(".asrgen_configs")
     
     @classmethod
-    def ensure_config_dir(cls):
+    def ensure_config_dir(cls) -> None:
         """Ensure config directory exists"""
         cls.CONFIG_DIR.mkdir(exist_ok=True)
     

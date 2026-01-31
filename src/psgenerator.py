@@ -16,6 +16,26 @@ class PSGenerator:
     }
     
     @staticmethod
+    def _escape_powershell_string(value: str) -> str:
+        """
+        Escape a string for safe PowerShell use.
+        Prevents injection attacks by escaping special characters.
+        
+        Args:
+            value: String to escape
+            
+        Returns:
+            Escaped string safe for PowerShell
+        """
+        # Escape special PowerShell characters
+        value = value.replace("\\", "\\\\")  # Backslash
+        value = value.replace("'", "''")     # Single quote
+        value = value.replace('"', '\"')     # Double quote
+        value = value.replace("$", "`$")     # Dollar sign (variable indicator)
+        value = value.replace("`", "``")     # Backtick (escape character)
+        return value
+    
+    @staticmethod
     def generate_rule_command(
         rule_ids: List[str], 
         mode: str, 
@@ -63,8 +83,8 @@ class PSGenerator:
         if not exclusion_paths:
             return ""
         
-        # Escape paths for PowerShell
-        escaped_paths = [f'"{path}"' for path in exclusion_paths]
+        # Escape paths for PowerShell (security: prevent injection)
+        escaped_paths = [f'"{PSGenerator._escape_powershell_string(path)}"' for path in exclusion_paths]
         path_string = ", ".join(escaped_paths)
         
         if rule_id:
