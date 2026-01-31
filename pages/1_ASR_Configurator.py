@@ -1,114 +1,317 @@
 import streamlit as st
 from streamlit.components.v1 import html
-from asr import asr_rules, html_code
+from datetime import datetime
+from src import (
+    ASR_RULES,
+    PRESETS,
+    get_categories,
+    get_rules_by_category,
+    check_conflicts,
+    PSGenerator,
+    simplify_config_for_display,
+    ConfigManager
+)
+from asr import html_code
 
 st.set_page_config(page_title="ASR Configurator", layout="wide")
 
-st.title("Attack Surface Configurator")
-st.markdown("This tool will help you configure the Attack Surface Reduction rules in Microsoft Defender for Endpoint.")
-user_inputs = {}
-mode = None
-enable_all = st.checkbox("Enable All Rules")
-if enable_all:
-    global_mode = st.selectbox("Select mode for all rules:", ["Enabled", "Audit", "Warn"])
+st.title("⚙️ Attack Surface Reduction Configurator")
+st.markdown("Configure ASR rules with an improved, searchable interface. Save configurations for reuse.")
 
-    # PowerShell equivalent action string
-    ps_action = {"Enabled": "Enabled", "Audit": "AuditMode", "Warn": "Warn"}[global_mode]
+# Initialize session state
+if "config" not in st.session_state:
+    st.session_state.config = {}
+if "search_query" not in st.session_state:
+    st.session_state.search_query = ""
+if "selected_category" not in st.session_state:
+    st.session_state.selected_category = "All"
 
-    st.code("""
-    $asrRuleIds = @{
-        "56A863A9-875E-4185-98A7-B882C64B5CE5" = "Block abuse of exploited vulnerable signed drivers";
-        "7674BA52-37EB-4A4F-A9A1-F0F9A1619A2C" = "Block Adobe Reader from creating child processes";
-        "D4F940AB-401B-4EFC-AADC-AD5F3C50688A" = "Block all Office applications from creating child processes";
-        "9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2" = "Block credential stealing from the Windows local security authority subsystem (lsass.exe)";
-        "BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550" = "Block executable content from email client and webmail";
-        "01443614-CD74-433A-B99E-2ECDC07BFC25" = "Block executable files from running unless they meet a prevalence, age, or trusted list criterion";
-        "5BEB7EFE-FD9A-4556-801D-275E5FFC04CC" = "Block execution of potentially obfuscated scripts";
-        "D3E037E1-3EB8-44C8-A917-57927947596D" = "Block JavaScript or VBScript from launching downloaded executable content";
-        "3B576869-A4EC-4529-8536-B80A7769E899" = "Block Office applications from creating executable content";
-        "75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84" = "Block Office applications from injecting code into other processes";
-        "26190899-1602-49E8-8B27-EB1D0A1CE869" = "Block Office communication application from creating child processes";
-        "E6DB77E5-3DF2-4CF1-B95A-636979351E5B" = "Block persistence through WMI event subscription";
-        "D1E49AAC-8F56-4280-B9BA-993A6D77406C" = "Block process creations originating from PSExec and WMI commands";
-        "B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4" = "Block untrusted and unsigned processes that run from USB";
-        "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B" = "Block Win32 API calls from Office macros";
-        "C1DB55AB-C21A-4637-BB3F-A12568109D35" = "Use advanced protection against ransomware";
-        "A8F5898E-1DC8-49A9-9878-85004B8A61E6" = "Block Webshell creation for Servers";
-        "33DDEDF1-C6E0-47CB-833E-DE6133960387" = "Block rebooting machine in Safe Mode (preview)";
-        "C0033C00-D16D-4114-A5A0-DC9B3A7D2CEB" = "Block use of copied or impersonated system tools (preview)";
-    }
-    foreach ($id in $asrRuleIds.Keys) {
-        Add-MpPreference -AttackSurfaceReductionRules_Ids $id -AttackSurfaceReductionRules_Actions """ + ps_action + """
-    }
 
-    Write-Host "All specified ASR rules have been set to """ + ps_action + """."
-    """, language="powershell")
-
-for rule_name, rule_id in asr_rules.items():
-    with st.expander(f"{rule_name} ({rule_id})"):
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            enable = st.checkbox("Enable", key=f"enable_{rule_id}")
-
-        with col2:
-            disable = st.checkbox("Disable", key=f"disable_{rule_id}")
-
-        with col3:
-            mode = st.radio("Mode:", ["Block", "Audit", "Warn"], key=f"mode_{rule_id}")
-
-        with col4:
-            exclusion = st.text_input("Exclusions (Optional)", key=f"exclusion_{rule_id}")
-
-        user_inputs[rule_id] = {'enable': enable, 'disable': disable, 'mode': mode, 'exclusion': exclusion}
-
-        mode_colors = {
-            "Audit": "orange",
-            "Block": "red",
-            "Warn": "blue"  
-        }
-
-        if enable:
-            action_color = mode_colors.get(mode, "black") 
-            action_text = f"<span style='color: {action_color};'>This will enable '{rule_name}' in {mode} Mode.</span>"
-        elif disable:
-            action_text = f"<span style='color: grey;'>This will disable '{rule_name}'.</span>"
-        else:
-            action_text = "Select an option to see the action."
-
-        st.markdown(action_text, unsafe_allow_html=True)
-
-if st.button("Generate Command"):
-    commands = []
-    mode_grouping = {"Block": [], "Audit": [], "Warn": [], "Disabled": []}
-    exclusion_commands = []
-
-    for rule_id, inputs in user_inputs.items():
-        if inputs['enable'] and not inputs['disable']:
-            mode_grouping[inputs['mode']].append(rule_id)
-            if inputs['exclusion']:
-                exclusion_command = f"Set-MpPreference -AttackSurfaceReductionOnlyExclusions -Exclusions {inputs['exclusion']}"
-                exclusion_commands.append(exclusion_command)
-                st.caption(f"Note: The exclusion will be applied to all rules. If you would like per-rule exclusions, use set-mppreference -AttackSurfaceReductionRules_Ids {rule_id} -AttackSurfaceReductionOnlyExclusions -Exclusions {inputs['exclusion']}")
-        elif inputs['disable']:
-            mode_grouping["Disabled"].append(rule_id)
-
-    for mode, ids in mode_grouping.items():
-        if ids:
-            action_cmd = {"Block": "Enabled", "Audit": "AuditMode", "Warn": "Warn", "Disabled": "Disabled"}.get(mode)
-            command = f"Set-MpPreference -AttackSurfaceReductionRules_Ids {','.join(ids)} -AttackSurfaceReductionRules_Actions {action_cmd}"
-            commands.append(command)
-
-    final_commands = commands + exclusion_commands
-
-    if final_commands:
-        st.text_area("PowerShell Commands:", "\n".join(final_commands), height=100)
-        st.caption("To view the enabled rules, use the following command in PowerShell: Get-MpPreference | Select-Object AttackSurfaceReductionRules_Ids")
-        st.caption("[Learn more about configuring file and folder exclusions](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/configure-extension-file-exclusions-microsoft-defender-antivirus?view=o365-worldwide)")
-
-    else:
-        st.error("Please select at least one rule and specify the action.")
+def render_rule_editor(rule_id: str, rule, config: dict):
+    """Render a single rule editor"""
+    is_selected = rule_id in config
+    
+    with st.expander(
+        f"{'✅' if is_selected else '⬜'} {rule.name}",
+        expanded=False
+    ):
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
         
-st.sidebar.image("assets/logo.png", width=300)
+        with col1:
+            include = st.checkbox(
+                "Enable",
+                value=is_selected,
+                key=f"enable_{rule_id}"
+            )
+        
+        if include:
+            with col2:
+                mode = st.selectbox(
+                    "Mode:",
+                    ["Block", "Audit", "Warn"],
+                    index=0,
+                    key=f"mode_{rule_id}"
+                )
+        else:
+            mode = "Block"
+        
+        with col3:
+            if include:
+                with st.popover("🛑 Add Exclusion"):
+                    exclusion_input = st.text_area(
+                        "Paths to exclude (one per line):",
+                        value="\n".join(config.get(rule_id, {}).get("exclusions", [])),
+                        key=f"exclusion_{rule_id}",
+                        height=100
+                    )
+                    exclusions = [p.strip() for p in exclusion_input.split("\n") if p.strip()]
+            else:
+                exclusions = []
+        
+        with col4:
+            if include:
+                status_color = {"Block": "🔴", "Audit": "🟠", "Warn": "🟡"}.get(mode, "⬜")
+                st.success(f"{status_color} **{mode} Mode**")
+            else:
+                st.caption("Not configured")
+        
+        # Show rule description
+        st.divider()
+        st.caption(rule.description)
+        
+        # Update config
+        if include:
+            config[rule_id] = {"mode": mode, "exclusions": exclusions}
+        elif rule_id in config:
+            del config[rule_id]
 
-st.sidebar.markdown(html_code, unsafe_allow_html=True)
+# Sidebar
+with st.sidebar:
+    st.image("assets/logo.png", width=300)
+    st.markdown(html_code, unsafe_allow_html=True)
+    
+    st.divider()
+    st.subheader("🎯 Quick Presets")
+    
+    preset_choice = st.selectbox("Load a preset:", ["None"] + list(PRESETS.keys()))
+    
+    if preset_choice != "None":
+        preset = PRESETS[preset_choice]
+        st.info(f"**{preset_choice}**\n\n{preset['description']}")
+        
+        if st.button(f"Load {preset_choice}"):
+            st.session_state.config = {
+                rule_id: {"mode": preset["mode"], "exclusions": []}
+                for rule_id in preset["rules"]
+            }
+            st.success("✅ Preset loaded! Configure exclusions below if needed.")
+            st.rerun()
+    
+    st.divider()
+    st.subheader("💾 Configuration Management")
+    
+    # Save current config
+    if st.button("💾 Save Current Configuration"):
+        st.session_state.show_save_dialog = True
+    
+    if st.session_state.get("show_save_dialog", False):
+        with st.form("save_config_form"):
+            config_name = st.text_input("Configuration Name", value="My ASR Config")
+            config_desc = st.text_area("Description (optional)", height=80)
+            
+            if st.form_submit_button("Save"):
+                if config_name and st.session_state.config:
+                    filepath = ConfigManager.save_config(
+                        st.session_state.config,
+                        config_name,
+                        config_desc
+                    )
+                    st.success(f"✅ Saved: {config_name}")
+                    st.session_state.show_save_dialog = False
+                    st.rerun()
+                else:
+                    st.error("Please name the config and select at least one rule.")
+    
+    # Load saved configs
+    st.subheader("📂 Saved Configurations")
+    saved_configs = ConfigManager.list_configs()
+    
+    if saved_configs:
+        selected_config = st.selectbox(
+            "Load configuration:",
+            [None] + [cfg["name"] for cfg in saved_configs],
+            format_func=lambda x: x if x else "Select..."
+        )
+        
+        if selected_config:
+            config_data = next((cfg for cfg in saved_configs if cfg["name"] == selected_config), None)
+            if config_data:
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("📥 Load"):
+                        loaded_config = ConfigManager.load_config(config_data["path"])
+                        if loaded_config:
+                            st.session_state.config = loaded_config
+                            st.success(f"✅ Loaded: {selected_config}")
+                            st.rerun()
+                with col2:
+                    if st.button("🗑️ Delete"):
+                        if ConfigManager.delete_config(config_data["path"]):
+                            st.success(f"Deleted: {selected_config}")
+                            st.rerun()
+    else:
+        st.caption("No saved configurations yet.")
+
+# Main content
+st.divider()
+
+# Search and filter controls
+col1, col2, col3 = st.columns([2, 1, 1])
+
+with col1:
+    search_query = st.text_input("🔍 Search rules by name or description:", key="search_input")
+
+with col2:
+    categories = ["All"] + get_categories()
+    selected_category = st.selectbox("📁 Filter by category:", categories)
+
+with col3:
+    st.write("")  # Spacer
+    if st.button("Clear All Selections"):
+        st.session_state.config = {}
+        st.rerun()
+
+st.divider()
+
+# Filter rules based on search and category
+filtered_rules = {}
+
+for rule_id, rule in ASR_RULES.items():
+    # Category filter
+    if selected_category != "All" and rule.category != selected_category:
+        continue
+    
+    # Search filter
+    if search_query:
+        query_lower = search_query.lower()
+        if not (query_lower in rule.name.lower() or query_lower in rule.description.lower()):
+            continue
+    
+    filtered_rules[rule_id] = rule
+
+# Show filtering status
+if search_query or selected_category != "All":
+    st.caption(f"📊 Showing {len(filtered_rules)} of {len(ASR_RULES)} rules")
+
+# Check for conflicts
+current_rule_ids = list(st.session_state.config.keys())
+conflicts = check_conflicts(current_rule_ids)
+
+if conflicts:
+    with st.warning("⚠️ **Rule Conflicts Detected**"):
+        for conflict in conflicts:
+            st.write(f"• {conflict['message']}")
+
+# Display rules
+if filtered_rules:
+    # Tabs for different categories if no filter is applied
+    if selected_category == "All" and not search_query:
+        category_list = get_categories()
+        tabs = st.tabs(category_list)
+        
+        for tab, category in zip(tabs, category_list):
+            with tab:
+                category_rules = get_rules_by_category(category)
+                
+                for rule_id, rule in category_rules.items():
+                    render_rule_editor(rule_id, rule, st.session_state.config)
+    else:
+        # Single view for filtered rules
+        for rule_id, rule in filtered_rules.items():
+            render_rule_editor(rule_id, rule, st.session_state.config)
+else:
+    st.info("No rules match your search criteria.")
+
+st.divider()
+
+# Configuration preview and generation
+st.subheader("📋 Preview & Generate")
+
+if st.session_state.config:
+    # Show summary
+    summary = simplify_config_for_display(st.session_state.config)
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("🔒 Block", len(summary["block"]))
+    with col2:
+        st.metric("👀 Audit", len(summary["audit"]))
+    with col3:
+        st.metric("⚠️ Warn", len(summary["warn"]))
+    with col4:
+        st.metric("❌ Disabled", len(summary["disabled"]))
+    
+    # Display selected rules
+    if summary["block"]:
+        with st.expander("🔒 Rules in Block Mode"):
+            for rule_name in summary["block"]:
+                st.write(f"• {rule_name}")
+    
+    if summary["audit"]:
+        with st.expander("👀 Rules in Audit Mode"):
+            for rule_name in summary["audit"]:
+                st.write(f"• {rule_name}")
+    
+    if summary["warn"]:
+        with st.expander("⚠️ Rules in Warn Mode"):
+            for rule_name in summary["warn"]:
+                st.write(f"• {rule_name}")
+    
+    if summary["disabled"]:
+        with st.expander("❌ Disabled Rules"):
+            for rule_name in summary["disabled"]:
+                st.write(f"• {rule_name}")
+    
+    if summary["exclusions"]:
+        with st.expander("🛑 Exclusions"):
+            for rule_name, exclusions in summary["exclusions"].items():
+                st.write(f"**{rule_name}:**")
+                for exc in exclusions:
+                    st.code(exc, language="text")
+    
+    # Generate PowerShell
+    st.subheader("🚀 Generate PowerShell Script")
+    
+    tab1, tab2, tab3 = st.tabs(["Full Script", "Commands Only", "JSON Export"])
+    
+    with tab1:
+        ps_script = PSGenerator.generate_full_script(st.session_state.config)
+        st.code(ps_script, language="powershell")
+        st.download_button(
+            label="📥 Download PowerShell Script",
+            data=ps_script,
+            file_name=f"ASR_Config_{datetime.now().strftime('%Y%m%d_%H%M%S')}.ps1",
+            mime="text/plain"
+        )
+    
+    with tab2:
+        main_commands, exclusion_commands = PSGenerator.generate_batch_commands(st.session_state.config)
+        all_commands = main_commands + exclusion_commands
+        commands_text = "\n".join(all_commands)
+        st.code(commands_text, language="powershell")
+    
+    with tab3:
+        json_export = ConfigManager.export_config_as_json(st.session_state.config)
+        st.code(json_export, language="json")
+        st.download_button(
+            label="📥 Download Configuration (JSON)",
+            data=json_export,
+            file_name=f"ASR_Config_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+            mime="application/json"
+        )
+    
+    # Verification command
+    st.info(f"**Verification Command:**\n```\n{PSGenerator.generate_view_command()}\n```")
+
+else:
+    st.info("👈 Select rules above to generate PowerShell commands.")
